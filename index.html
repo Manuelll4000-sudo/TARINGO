@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión con Google</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #user-info {
+      margin-top: 20px;
+      display: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Inicia sesión con Google</h1>
+
+  <div id="login-container">
+    <button id="google-login-button">Iniciar sesión con Google</button>
+  </div>
+
+  <div id="user-info">
+    <h2>¡Bienvenido!</h2>
+    <p id="user-name"></p>
+    <img id="user-photo" alt="Foto de perfil" style="border-radius: 50%; width: 100px; height: 100px;">
+    <p><button id="logout-button">Cerrar sesión</button></p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Importar los módulos necesarios de Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // Tu configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBsGVYKWb9t9IYMjfRwXYQqGCZKOVJTktc",
+      authDomain: "taringo-d63df.firebaseapp.com",
+      projectId: "taringo-d63df",
+      storageBucket: "taringo-d63df.firebasestorage.app",
+      messagingSenderId: "844266374808",
+      appId: "1:844266374808:web:5a6c65613f95a85664b2ed"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Obtener el botón de inicio de sesión
+    const googleLoginButton = document.getElementById('google-login-button');
+    const userInfoContainer = document.getElementById('user-info');
+    const userNameElement = document.getElementById('user-name');
+    const userPhotoElement = document.getElementById('user-photo');
+    const logoutButton = document.getElementById('logout-button');
+
+    // Función para iniciar sesión con Google
+    googleLoginButton.addEventListener('click', async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        // Mostrar la información del usuario
+        showUserInfo(user);
+      } catch (error) {
+        console.error("Error de inicio de sesión: ", error);
+      }
+    });
+
+    // Función para mostrar la información del usuario
+    function showUserInfo(user) {
+      userNameElement.textContent = `Nombre: ${user.displayName}`;
+      userPhotoElement.src = user.photoURL;
+      googleLoginButton.style.display = 'none';
+      userInfoContainer.style.display = 'block';
+    }
+
+    // Función para cerrar sesión
+    logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        googleLoginButton.style.display = 'block';
+        userInfoContainer.style.display = 'none';
+      }).catch((error) => {
+        console.error("Error al cerrar sesión: ", error);
+      });
+    });
+
+    // Escuchar el estado de autenticación (para mantener la sesión activa)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Si el usuario está autenticado, mostramos su información
+        showUserInfo(user);
+      } else {
+        // Si el usuario no está autenticado, mostramos el botón de inicio de sesión
+        googleLoginButton.style.display = 'block';
+        userInfoContainer.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
