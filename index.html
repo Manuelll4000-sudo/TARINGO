@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Página con Video de Streamtape</title>
+  <title>Página con Video sin Anuncios</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -45,6 +45,7 @@
       height: 360px;
       border-radius: 8px;
       border: none;
+      pointer-events: none; /* Evita interacciones sospechosas */
     }
     p {
       font-size: 16px;
@@ -59,19 +60,27 @@
     <p>Haz clic en el botón para ver el video de One Piece.</p>
     <button id="show-video-btn">Ver video de One Piece</button>
     <div id="video-container" style="display: none;">
-      <iframe src="https://streamtape.com/e/yD1DxmDkMki16oZ" allowfullscreen></iframe>
+      <iframe id="video-frame" 
+              src="https://mixdrop.co/e/dkj936pzfpndmg" 
+              allowfullscreen 
+              sandbox="allow-scripts allow-same-origin"
+              referrerpolicy="no-referrer">
+      </iframe>
     </div>
   </div>
 
   <script>
-    // Función para mostrar el video
     document.getElementById('show-video-btn').addEventListener('click', function() {
-      // Cambiar texto y ocultar el botón
       document.querySelector('p').textContent = "¡Disfruta viendo el video!";
-      this.style.display = 'none';  // Ocultar el botón
-
-      // Mostrar el contenedor del video
+      this.style.display = 'none';
       document.getElementById('video-container').style.display = 'block';
+      
+      // Asegura que el iframe se carga sin redirecciones
+      let iframe = document.getElementById('video-frame');
+      iframe.contentWindow.addEventListener('beforeunload', function(event) {
+        event.preventDefault();
+        event.returnValue = '';
+      });
     });
   </script>
 
