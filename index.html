@@ -3,117 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar sesión con Google</title>
+  <title>Página con Interfaz JavaScript y Video de Streamtape</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #app {
+      background-color: white;
+      border-radius: 8px;
       padding: 20px;
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-
-    #user-info {
-      margin-top: 20px;
-      display: none;
+    h1 {
+      text-align: center;
     }
-
     button {
+      display: block;
+      margin: 20px auto;
       padding: 10px 20px;
-      background-color: #4CAF50;
+      background-color: #007bff;
       color: white;
       border: none;
-      cursor: pointer;
       border-radius: 5px;
+      cursor: pointer;
     }
-
     button:hover {
-      background-color: #45a049;
+      background-color: #0056b3;
+    }
+    p {
+      text-align: center;
+      font-size: 18px;
+    }
+    #video-container {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+    video {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
 
-  <h1>Inicia sesión con Google</h1>
+  <div id="app"></div>
 
-  <div id="login-container">
-    <button id="google-login-button">Iniciar sesión con Google</button>
-  </div>
+  <script>
+    // Función para crear la interfaz completamente con JavaScript
+    function createInterface() {
+      // Crear elementos de la página
+      const app = document.getElementById('app');
 
-  <div id="user-info">
-    <h2>¡Bienvenido!</h2>
-    <p id="user-name"></p>
-    <img id="user-photo" alt="Foto de perfil" style="border-radius: 50%; width: 100px; height: 100px;">
-    <p><button id="logout-button">Cerrar sesión</button></p>
-  </div>
+      const title = document.createElement('h1');
+      title.textContent = 'Hola Mundo';
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    // Importar los módulos necesarios de Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+      const description = document.createElement('p');
+      description.textContent = 'Esta es una página con una interfaz completamente generada por JavaScript.';
 
-    // Tu configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBsGVYKWb9t9IYMjfRwXYQqGCZKOVJTktc",
-      authDomain: "taringo-d63df.firebaseapp.com",
-      projectId: "taringo-d63df",
-      storageBucket: "taringo-d63df.firebasestorage.app",
-      messagingSenderId: "844266374808",
-      appId: "1:844266374808:web:5a6c65613f95a85664b2ed"
-    };
+      const button = document.createElement('button');
+      button.textContent = 'Ver video de One Piece';
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+      const videoContainer = document.createElement('div');
+      videoContainer.id = 'video-container';
 
-    // Obtener el botón de inicio de sesión
-    const googleLoginButton = document.getElementById('google-login-button');
-    const userInfoContainer = document.getElementById('user-info');
-    const userNameElement = document.getElementById('user-name');
-    const userPhotoElement = document.getElementById('user-photo');
-    const logoutButton = document.getElementById('logout-button');
+      // Crear el elemento de video con el enlace directo de Streamtape
+      const video = document.createElement('video');
+      video.controls = true;
+      video.src = "https://streamtape.com/v/yD1DxmDkMki16oZ/One_piece_1076.mp4";  // Video de Streamtape
+      video.type = "video/mp4";
 
-    // Función para iniciar sesión con Google
-    googleLoginButton.addEventListener('click', async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        // Mostrar la información del usuario
-        showUserInfo(user);
-      } catch (error) {
-        console.error("Error de inicio de sesión: ", error);
-      }
-    });
+      // Agregar el video al contenedor
+      videoContainer.appendChild(video);
 
-    // Función para mostrar la información del usuario
-    function showUserInfo(user) {
-      userNameElement.textContent = `Nombre: ${user.displayName}`;
-      userPhotoElement.src = user.photoURL;
-      googleLoginButton.style.display = 'none';
-      userInfoContainer.style.display = 'block';
+      // Agregar un evento al botón para mostrar el video
+      button.addEventListener('click', function() {
+        description.textContent = '¡Estás viendo el video de One Piece!';
+        button.style.display = 'none';  // Ocultar el botón después de hacer clic
+        videoContainer.style.display = 'block';  // Mostrar el contenedor de video
+        video.play();  // Iniciar la reproducción del video
+      });
+
+      // Insertar los elementos creados en el DOM
+      app.appendChild(title);
+      app.appendChild(description);
+      app.appendChild(button);
+      app.appendChild(videoContainer);
     }
 
-    // Función para cerrar sesión
-    logoutButton.addEventListener('click', () => {
-      signOut(auth).then(() => {
-        googleLoginButton.style.display = 'block';
-        userInfoContainer.style.display = 'none';
-      }).catch((error) => {
-        console.error("Error al cerrar sesión: ", error);
-      });
-    });
-
-    // Escuchar el estado de autenticación (para mantener la sesión activa)
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Si el usuario está autenticado, mostramos su información
-        showUserInfo(user);
-      } else {
-        // Si el usuario no está autenticado, mostramos el botón de inicio de sesión
-        googleLoginButton.style.display = 'block';
-        userInfoContainer.style.display = 'none';
-      }
-    });
+    // Llamar a la función para crear la interfaz
+    createInterface();
   </script>
 
 </body>
